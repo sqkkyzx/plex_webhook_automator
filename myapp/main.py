@@ -2,10 +2,14 @@ import os
 import cgi
 import json
 from io import BytesIO
+from fastapi.staticfiles import StaticFiles
 from fastapi import FastAPI, Request
+from pydantic import BaseModel
+
 from payload import Payload
-from log import log
+from log import log, WebSocket, connections
 from log import Color as C
+from typing import Dict
 
 env = os.environ
 
@@ -19,9 +23,10 @@ class Environ:
 
 
 app = FastAPI()
+app.mount("/admin/", StaticFiles(directory="html"), name="static")
 
 
-@app.post("/")
+@app.post("/event")
 async def main(request: Request):
     body = await request.body()
     content_type = cgi.parse_header(request.headers.get('content-type'))[1]
@@ -98,3 +103,54 @@ async def main(request: Request):
                      F"媒体 {C.BOLD}{C.Magenta}{payload.Metadata.title}{C.RESET}")
 
     return 'succes'
+
+
+@app.websocket("/ws_log")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    connections.append(websocket)
+    try:
+        while True:
+            await websocket.receive_text()  # Keep the connection open
+    except Exception as e:
+        log.error(e)
+        connections.remove(websocket)
+
+
+class Tag(BaseModel):
+    key: str
+    value: str
+
+
+def read_tags():
+    with open('func_localization_tags.json', 'r') as file:
+        return json.load(file)
+
+
+def write_tags(tags):
+    with open('func_localization_tags.json', 'w') as file:
+        json.dump(tags, file, ensure_ascii=False)
+
+
+@app.get("/api/tags")
+def get_tags():
+    return read_tags()
+
+
+@app.post("/api/tags")
+def add_tag(tag: Tag):
+    tags = read_tags()
+    tags[tag.key] = tag.value
+    write_tags(tags)
+    return {"success": True}
+
+
+@app.delete("/api/tags")
+def delete_tag(tag: Tag):
+    tags = read_tags()
+    if tag.key in tags:
+        del tags[tag.key]
+        write_tags(tags)
+        return {"success": True}
+    else:
+        return {"success": False}

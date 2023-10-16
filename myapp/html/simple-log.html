@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <title>FastAPI Logs</title>
+    <script src="https://unpkg.com/ansi_up@5.0.1/ansi_up.js"></script>
+</head>
+<body>
+    <h1>FastAPI Logs</h1>
+    <div id="logs"></div>
+
+    <script>
+        const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = wsProtocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + '/ws_log';
+        const socket = new WebSocket(wsUrl);
+        const ansi_up = new AnsiUp;
+
+        socket.onmessage = function(event) {
+            const logDiv = document.getElementById('logs');
+            const logMessage = document.createElement('p');
+            logMessage.innerHTML = ansi_up.ansi_to_html(event.data);
+            logDiv.appendChild(logMessage);
+        }
+    </script>
+</body>
+</html>

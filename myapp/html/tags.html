@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tags Editor</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        .addTagForm {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .addTagForm input[type="text"] {
+            flex-grow: 1;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tags Editor</h1>
+
+    <div class="addTagForm">
+        <label for="english">English:</label>
+        <input type="text" id="english" name="english">
+        <label for="chinese">Chinese:</label>
+        <input type="text" id="chinese" name="chinese">
+        <button id="addTagButton">Add Tag</button>
+    </div>
+
+    <table id="tagsTable">
+        <tr>
+            <th>English</th>
+            <th>Chinese</th>
+            <th>Action</th>
+        </tr>
+        <!-- Table data goes here -->
+    </table>
+
+    <script src="js/tags.js"></script>
+</body>
+</html>
