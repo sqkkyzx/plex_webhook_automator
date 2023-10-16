@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Config Editor</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <h1>Config Editor</h1>
+    <form id="config-form">
+        <label for="localization">LOCALIZATION:</label><br>
+        <input type="checkbox" id="localization" name="localization"><br>
+        <label for="plex_host">PLEX_HOST:</label><br>
+        <input type="text" id="plex_host" name="plex_host"><br>
+        <label for="plex_port">PLEX_PORT:</label><br>
+        <input type="number" id="plex_port" name="plex_port"><br>
+        <label for="plex_token">PLEX_TOKEN:</label><br>
+        <input type="text" id="plex_token" name="plex_token"><br>
+        <input type="submit" value="Submit">
+    </form>
+    <script src="js/config.js"></script>
+</body>
+</html>

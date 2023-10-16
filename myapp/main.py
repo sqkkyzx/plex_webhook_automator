@@ -8,6 +8,7 @@ from fastapi import FastAPI, Request
 from payload import Payload
 from log import log, Color, WebSocket, connections
 from pydantic import BaseModel
+import uvicorn
 
 
 def config():
@@ -186,3 +187,7 @@ def edit_config(cfg: Config):
         json.dump(cfg.model_dump(), file, ensure_ascii=False)
     log.info(f'更新了配置文件')
     return {"success": True}
+
+
+if __name__ == '__main__':
+    uvicorn.run('main:app', host='0.0.0.0', port=8080, reload=True, use_colors=True, log_level='warning')

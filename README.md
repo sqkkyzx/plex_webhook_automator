@@ -4,6 +4,26 @@
 
     ⚠ 项目正在开发中，功能尚不完善，仅少量功能可用。
 
+
+# 部署
+
+- ### 使用容器：
+    ```shell
+    docker run -d --name plex_webhook_automator -p 8080:8080 sqkkyzx/plex_webhook_automator:latest
+    ```
+- ### 使用源代码部署：
+    从 Github 下载源码，并进入 myapp 目录
+    ```shell
+    cd myapp
+    pip install requests uvicorn[standard] fastapi pypinyi
+    python myapp.py
+    ```
+
+# 配置
+  - 可进入 http://127.0.0.1:8080/admin/config.html 改写配置。
+  - 可进入 http://127.0.0.1:8080/admin/tags.html 增加或删除标签的翻译。
+  - 可进入 http://127.0.0.1:8080/admin/log.html 查看实时的事件日志。
+
 # 功能
 
 功能目录以 PLEX WEBHOOK 通知的 12 种事件排序，请参考下文：
