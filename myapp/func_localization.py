@@ -3,7 +3,7 @@ import pypinyin
 import requests
 import json
 
-with open('func_localization_tags.json', 'r') as f:
+with open('config/func_localization_tags.json', 'r') as f:
     TAGS = json.load(f)
 
 # TAGS = {

@@ -5,9 +5,8 @@ from io import BytesIO
 from fastapi.staticfiles import StaticFiles
 from fastapi import FastAPI, Request
 
-from payload import *
-from log import log, WebSocket, connections
-from log import Color as C
+from payload import Payload
+from log import log, Color, WebSocket, connections
 from pydantic import BaseModel
 
 env = os.environ
@@ -48,44 +47,44 @@ async def main(request: Request):
         case 'library.on.deck':
             pass
         case 'library.new':
-            log.info(F"服务器 {C.BOLD}{C.Magenta}{payload.Server.title}{C.RESET} 的"
-                     F"库 {C.BOLD}{C.Magenta}{payload.Metadata.librarySectionTitle}{C.RESET} "
-                     F"新增加了媒体 {C.BOLD}{C.Magenta}{payload.Metadata.title}{C.RESET}")
+            log.info(F"服务器 {Color.BOLD}{Color.Magenta}{payload.Server.title}{Color.RESET} 的"
+                     F"库 {Color.BOLD}{Color.Magenta}{payload.Metadata.librarySectionTitle}{Color.RESET} "
+                     F"新增加了媒体 {Color.BOLD}{Color.Magenta}{payload.Metadata.title}{Color.RESET}")
             if Environ.LOCALIZATION is True:
                 import func_localization
                 func_localization.PlexServer(Environ.PLEX_URL, Environ.PLEX_TOKEN).operate_item(
                     payload.Metadata.ratingKey)
         case 'media.play':
-            log.info(F"服务器 {C.BOLD}{C.Magenta}{payload.Server.title}{C.RESET} 的"
-                     F"用户 {C.BOLD}{C.Magenta}{payload.Account.title} {C.Green}{C.ITALIC}开始播放{C.RESET} "
-                     F"库 {C.BOLD}{C.Magenta}{payload.Metadata.librarySectionTitle}{C.RESET} 上的"
-                     F"媒体 {C.BOLD}{C.Magenta}{payload.Metadata.title}{C.RESET}")
+            log.info(F"服务器 {Color.BOLD}{Color.Magenta}{payload.Server.title}{Color.RESET} 的"
+                     F"用户 {Color.BOLD}{Color.Magenta}{payload.Account.title} {Color.Green}{Color.ITALIC}开始播放{Color.RESET} "
+                     F"库 {Color.BOLD}{Color.Magenta}{payload.Metadata.librarySectionTitle}{Color.RESET} 上的"
+                     F"媒体 {Color.BOLD}{Color.Magenta}{payload.Metadata.title}{Color.RESET}")
         case 'media.pause':
-            log.info(F"服务器 {C.BOLD}{C.Magenta}{payload.Server.title}{C.RESET} 的"
-                     F"用户 {C.BOLD}{C.Magenta}{payload.Account.title} {C.Yellow}{C.ITALIC}暂停播放{C.RESET} "
-                     F"库 {C.BOLD}{C.Magenta}{payload.Metadata.librarySectionTitle}{C.RESET} 上的"
-                     F"媒体 {C.BOLD}{C.Magenta}{payload.Metadata.title}{C.RESET}")
+            log.info(F"服务器 {Color.BOLD}{Color.Magenta}{payload.Server.title}{Color.RESET} 的"
+                     F"用户 {Color.BOLD}{Color.Magenta}{payload.Account.title} {Color.Yellow}{Color.ITALIC}暂停播放{Color.RESET} "
+                     F"库 {Color.BOLD}{Color.Magenta}{payload.Metadata.librarySectionTitle}{Color.RESET} 上的"
+                     F"媒体 {Color.BOLD}{Color.Magenta}{payload.Metadata.title}{Color.RESET}")
         case 'media.resume':
-            log.info(F"服务器 {C.BOLD}{C.Magenta}{payload.Server.title}{C.RESET} 的"
-                     F"用户 {C.BOLD}{C.Magenta}{payload.Account.title} {C.Green}{C.ITALIC}继续播放{C.RESET} "
-                     F"库 {C.BOLD}{C.Magenta}{payload.Metadata.librarySectionTitle}{C.RESET} 上的"
-                     F"媒体 {C.BOLD}{C.Magenta}{payload.Metadata.title}{C.RESET}")
+            log.info(F"服务器 {Color.BOLD}{Color.Magenta}{payload.Server.title}{Color.RESET} 的"
+                     F"用户 {Color.BOLD}{Color.Magenta}{payload.Account.title} {Color.Green}{Color.ITALIC}继续播放{Color.RESET} "
+                     F"库 {Color.BOLD}{Color.Magenta}{payload.Metadata.librarySectionTitle}{Color.RESET} 上的"
+                     F"媒体 {Color.BOLD}{Color.Magenta}{payload.Metadata.title}{Color.RESET}")
         case 'media.stop':
-            log.info(F"服务器 {C.BOLD}{C.Magenta}{payload.Server.title}{C.RESET} 的"
-                     F"用户 {C.BOLD}{C.Magenta}{payload.Account.title} {C.Red}{C.ITALIC}停止播放{C.RESET} "
-                     F"库 {C.BOLD}{C.Magenta}{payload.Metadata.librarySectionTitle}{C.RESET} 上的"
-                     F"媒体 {C.BOLD}{C.Magenta}{payload.Metadata.title}{C.RESET}")
+            log.info(F"服务器 {Color.BOLD}{Color.Magenta}{payload.Server.title}{Color.RESET} 的"
+                     F"用户 {Color.BOLD}{Color.Magenta}{payload.Account.title} {Color.Red}{Color.ITALIC}停止播放{Color.RESET} "
+                     F"库 {Color.BOLD}{Color.Magenta}{payload.Metadata.librarySectionTitle}{Color.RESET} 上的"
+                     F"媒体 {Color.BOLD}{Color.Magenta}{payload.Metadata.title}{Color.RESET}")
         case 'media.scrobble':
-            log.info(F"服务器 {C.BOLD}{C.Magenta}{payload.Server.title}{C.RESET} 的"
-                     F"用户 {C.BOLD}{C.Magenta}{payload.Account.title} {C.Red}{C.ITALIC}已看完{C.RESET} "
-                     F"库 {C.BOLD}{C.Magenta}{payload.Metadata.librarySectionTitle}{C.RESET} 上的"
-                     F"媒体 {C.BOLD}{C.Magenta}{payload.Metadata.title}{C.RESET} ")
+            log.info(F"服务器 {Color.BOLD}{Color.Magenta}{payload.Server.title}{Color.RESET} 的"
+                     F"用户 {Color.BOLD}{Color.Magenta}{payload.Account.title} {Color.Red}{Color.ITALIC}已看完{Color.RESET} "
+                     F"库 {Color.BOLD}{Color.Magenta}{payload.Metadata.librarySectionTitle}{Color.RESET} 上的"
+                     F"媒体 {Color.BOLD}{Color.Magenta}{payload.Metadata.title}{Color.RESET} ")
         case 'media.rate':
-            log.info(F"服务器 {C.BOLD}{C.Magenta}{payload.Server.title}{C.RESET} 的"
-                     F"用户 {C.BOLD}{C.Magenta}{payload.Account.title}{C.RESET} "
-                     F"将库 {C.BOLD}{C.Magenta}{payload.Metadata.librarySectionTitle}{C.RESET} 上的"
-                     F"媒体 {C.BOLD}{C.Magenta}{payload.Metadata.title}{C.RESET} "
-                     F"评为 {C.Red}{C.BOLD}{C.ITALIC}{payload.Metadata.userRating}{C.RESET} 分")
+            log.info(F"服务器 {Color.BOLD}{Color.Magenta}{payload.Server.title}{Color.RESET} 的"
+                     F"用户 {Color.BOLD}{Color.Magenta}{payload.Account.title}{Color.RESET} "
+                     F"将库 {Color.BOLD}{Color.Magenta}{payload.Metadata.librarySectionTitle}{Color.RESET} 上的"
+                     F"媒体 {Color.BOLD}{Color.Magenta}{payload.Metadata.title}{Color.RESET} "
+                     F"评为 {Color.Red}{Color.BOLD}{Color.ITALIC}{payload.Metadata.userRating}{Color.RESET} 分")
         case 'admin.database.backup':
             log.info(payload_json)
             pass
@@ -96,10 +95,10 @@ async def main(request: Request):
             log.info(payload_json)
             pass
         case 'playback.started':
-            log.info(F"服务器 {C.BOLD}{C.Magenta}{payload.Server.title}{C.RESET} 的"
-                     F"共享用户 {C.BOLD}{C.Magenta}{payload.Account.title} {C.Green}{C.ITALIC}开始播放{C.RESET} "
-                     F"库 {C.BOLD}{C.Magenta}{payload.Metadata.librarySectionTitle}{C.RESET} 上的"
-                     F"媒体 {C.BOLD}{C.Magenta}{payload.Metadata.title}{C.RESET}")
+            log.info(F"服务器 {Color.BOLD}{Color.Magenta}{payload.Server.title}{Color.RESET} 的"
+                     F"共享用户 {Color.BOLD}{Color.Magenta}{payload.Account.title} {Color.Green}{Color.ITALIC}开始播放{Color.RESET} "
+                     F"库 {Color.BOLD}{Color.Magenta}{payload.Metadata.librarySectionTitle}{Color.RESET} 上的"
+                     F"媒体 {Color.BOLD}{Color.Magenta}{payload.Metadata.title}{Color.RESET}")
 
     return 'succes'
 
@@ -126,29 +125,60 @@ class TagTranlate(BaseModel):
 
 @app.get("/api/tags")
 def get_tags():
-    with open('func_localization_tags.json', 'r') as file:
+    with open('config/func_localization_tags.json', 'r') as file:
         return json.load(file)
 
 
 @app.post("/api/tags")
 def add_tag(tag: TagTranlate):
-    with open('func_localization_tags.json', 'r') as file:
+    with open('config/func_localization_tags.json', 'r') as file:
         tags = json.load(file)
     tags[tag.key] = tag.value
-    with open('func_localization_tags.json', 'w') as file:
+    with open('config/func_localization_tags.json', 'w') as file:
         json.dump(tags, file, ensure_ascii=False)
+    log.info(f'已新增标签 {Color.BOLD}{Color.Red}{tag.key}{Color.RESET} 的翻译 {Color.BOLD}{Color.Green}{tag.value}{Color.RESET}')
     return {"success": True}
 
 
 @app.delete("/api/tags")
 def delete_tag(tag: TagTranlate):
-    with open('func_localization_tags.json', 'r') as file:
+    with open('config/func_localization_tags.json', 'r') as file:
         tags = json.load(file)
-    log.info(tags)
     if tag.key in tags:
         del tags[tag.key]
-        with open('func_localization_tags.json', 'w') as file:
+        with open('config/func_localization_tags.json', 'w') as file:
             json.dump(tags, file, ensure_ascii=False)
+        log.info(f'已删除标签 {Color.BOLD}{Color.Red}{tag.key}{Color.RESET} 的翻译')
         return {"success": True}
     else:
         return {"success": False}
+
+
+# ----------------TAGS----------------------
+
+
+class Config(BaseModel):
+    LOCALIZATION:bool = bool(env.get('LOCALIZATION', True))
+    PLEX_HOST:str = env.get('PLEX_HOST', 'host.docker.internal')
+    PLEX_PORT:int = env.get('PLEX_PORT', '32400')
+    PLEX_TOKEN:str = env.get('PLEX_TOKEN', '')
+
+
+@app.get("/api/config")
+def get_config():
+    if os.path.exists('config/config.json'):
+        with open('config/config.json', 'r') as file:
+            return json.load(file)
+    else:
+        default_config = Config()
+        with open('config/config.json', 'w') as file:
+            json.dump(default_config.model_dump(), file, ensure_ascii=False)
+        return default_config.model_dump()
+
+
+@app.put("/api/config")
+def edit_config(cfg: Config):
+    with open('config/config.json', 'w') as file:
+        json.dump(cfg.model_dump(), file, ensure_ascii=False)
+    log.info(f'更新了配置文件')
+    return {"success": True}
