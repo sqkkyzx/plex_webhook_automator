@@ -4,12 +4,11 @@ import json
 from io import BytesIO
 from fastapi.staticfiles import StaticFiles
 from fastapi import FastAPI, Request
-from pydantic import BaseModel
 
-from payload import Payload
+from payload import *
 from log import log, WebSocket, connections
 from log import Color as C
-from typing import Dict
+from pydantic import BaseModel
 
 env = os.environ
 
@@ -117,40 +116,39 @@ async def websocket_endpoint(websocket: WebSocket):
         connections.remove(websocket)
 
 
-class Tag(BaseModel):
-    key: str
-    value: str
+# ----------------TAGS----------------------
 
 
-def read_tags():
-    with open('func_localization_tags.json', 'r') as file:
-        return json.load(file)
-
-
-def write_tags(tags):
-    with open('func_localization_tags.json', 'w') as file:
-        json.dump(tags, file, ensure_ascii=False)
+class TagTranlate(BaseModel):
+    key: str = None
+    value: str = None
 
 
 @app.get("/api/tags")
 def get_tags():
-    return read_tags()
+    with open('func_localization_tags.json', 'r') as file:
+        return json.load(file)
 
 
 @app.post("/api/tags")
-def add_tag(tag: Tag):
-    tags = read_tags()
+def add_tag(tag: TagTranlate):
+    with open('func_localization_tags.json', 'r') as file:
+        tags = json.load(file)
     tags[tag.key] = tag.value
-    write_tags(tags)
+    with open('func_localization_tags.json', 'w') as file:
+        json.dump(tags, file, ensure_ascii=False)
     return {"success": True}
 
 
 @app.delete("/api/tags")
-def delete_tag(tag: Tag):
-    tags = read_tags()
+def delete_tag(tag: TagTranlate):
+    with open('func_localization_tags.json', 'r') as file:
+        tags = json.load(file)
+    log.info(tags)
     if tag.key in tags:
         del tags[tag.key]
-        write_tags(tags)
+        with open('func_localization_tags.json', 'w') as file:
+            json.dump(tags, file, ensure_ascii=False)
         return {"success": True}
     else:
         return {"success": False}

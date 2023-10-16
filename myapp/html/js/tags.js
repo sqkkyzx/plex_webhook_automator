@@ -1,10 +1,7 @@
 window.onload = function() {
     fetchTags();
 
-    document.getElementById('addTagForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        addTag();
-    });
+    document.getElementById('addTagButton').addEventListener('click', addTag);
 }
 
 function fetchTags() {
@@ -27,15 +24,13 @@ function fetchTags() {
 function addTag() {
     let english = document.getElementById('english').value;
     let chinese = document.getElementById('chinese').value;
-    let newTag = {};
-    newTag[english] = chinese;
 
     fetch('/api/tags', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(newTag)
+        body: JSON.stringify({key:english,value:chinese})
     })
     .then(response => response.json())
     .then(data => {
