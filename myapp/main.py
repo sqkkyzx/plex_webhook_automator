@@ -9,15 +9,28 @@ from payload import Payload
 from log import log, Color, WebSocket, connections
 from pydantic import BaseModel
 
-env = os.environ
+
+def config():
+    if os.path.exists('config/config.json'):
+        with open('config/config.json', 'r') as file:
+            return json.load(file)
+    else:
+        default_config = {
+            "LOCALIZATION": bool(os.environ.get('LOCALIZATION', True)),
+            "PLEX_HOST": os.environ.get('PLEX_HOST', 'host.docker.internal'),
+            "PLEX_PORT": int(os.environ.get('PLEX_PORT', '32400')),
+            "PLEX_TOKEN": os.environ.get('PLEX_TOKEN', '请添加TOKEN')
+        }
+        with open('config/config.json', 'w') as file:
+            json.dump(default_config, file, ensure_ascii=False)
+        return default_config
 
 
-class Environ:
-    LOCALIZATION = bool(env.get('LOCALIZATION', True))
-    PLEX_HOST = env.get('PLEX_HOST', 'host.docker.internal')
-    PLEX_PORT = env.get('PLEX_PORT', '32400')
-    PLEX_TOKEN = env.get('PLEX_TOKEN', '')
-    PLEX_URL = f'http://{PLEX_HOST}:{PLEX_PORT}'
+class Config(BaseModel):
+    LOCALIZATION: bool
+    PLEX_HOST: str
+    PLEX_PORT: int
+    PLEX_TOKEN: str
 
 
 app = FastAPI()
@@ -50,10 +63,14 @@ async def main(request: Request):
             log.info(F"服务器 {Color.BOLD}{Color.Magenta}{payload.Server.title}{Color.RESET} 的"
                      F"库 {Color.BOLD}{Color.Magenta}{payload.Metadata.librarySectionTitle}{Color.RESET} "
                      F"新增加了媒体 {Color.BOLD}{Color.Magenta}{payload.Metadata.title}{Color.RESET}")
-            if Environ.LOCALIZATION is True:
+
+            cfg = config()
+
+            if cfg.get('LOCALIZATION') is True:
                 import func_localization
-                func_localization.PlexServer(Environ.PLEX_URL, Environ.PLEX_TOKEN).operate_item(
-                    payload.Metadata.ratingKey)
+                func_localization.PlexServer(
+                    f"http://{cfg.get('PLEX_HOST')}:{cfg.get('PLEX_PORT')}", cfg.get('PLEX_TOKEN')
+                ).operate_item(payload.Metadata.ratingKey)
         case 'media.play':
             log.info(F"服务器 {Color.BOLD}{Color.Magenta}{payload.Server.title}{Color.RESET} 的"
                      F"用户 {Color.BOLD}{Color.Magenta}{payload.Account.title} {Color.Green}{Color.ITALIC}开始播放{Color.RESET} "
@@ -136,7 +153,8 @@ def add_tag(tag: TagTranlate):
     tags[tag.key] = tag.value
     with open('config/func_localization_tags.json', 'w') as file:
         json.dump(tags, file, ensure_ascii=False)
-    log.info(f'已新增标签 {Color.BOLD}{Color.Red}{tag.key}{Color.RESET} 的翻译 {Color.BOLD}{Color.Green}{tag.value}{Color.RESET}')
+    log.info(
+        f'已新增标签 {Color.BOLD}{Color.Red}{tag.key}{Color.RESET} 的翻译 {Color.BOLD}{Color.Green}{tag.value}{Color.RESET}')
     return {"success": True}
 
 
@@ -154,26 +172,12 @@ def delete_tag(tag: TagTranlate):
         return {"success": False}
 
 
-# ----------------TAGS----------------------
-
-
-class Config(BaseModel):
-    LOCALIZATION:bool = bool(env.get('LOCALIZATION', True))
-    PLEX_HOST:str = env.get('PLEX_HOST', 'host.docker.internal')
-    PLEX_PORT:int = env.get('PLEX_PORT', '32400')
-    PLEX_TOKEN:str = env.get('PLEX_TOKEN', '')
+# ----------------CONFIG----------------------
 
 
 @app.get("/api/config")
 def get_config():
-    if os.path.exists('config/config.json'):
-        with open('config/config.json', 'r') as file:
-            return json.load(file)
-    else:
-        default_config = Config()
-        with open('config/config.json', 'w') as file:
-            json.dump(default_config.model_dump(), file, ensure_ascii=False)
-        return default_config.model_dump()
+    return config()
 
 
 @app.put("/api/config")
