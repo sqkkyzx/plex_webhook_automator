@@ -13,6 +13,7 @@ class Color:
     RESET = "\033[0m"
 
     BOLD = "\033[1m"
+    ITALIC = "\033[3m"
     UNDERLINE = "\033[4m"
     HIDDEN = "\033[8m"
 
