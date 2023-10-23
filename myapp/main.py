@@ -110,7 +110,8 @@ async def main(request: Request):
             log.info(payload_json)
             pass
         case 'device.new':
-            log.info(payload_json)
+            log.info(F"设备 {Color.BOLD}{Color.Magenta}{payload.Player.title} 加入了 "
+                     F"服务器 {Color.BOLD}{Color.Magenta}{payload.Server.title}{Color.RESET}")
             pass
         case 'playback.started':
             log.info(F"服务器 {Color.BOLD}{Color.Magenta}{payload.Server.title}{Color.RESET} 的"
