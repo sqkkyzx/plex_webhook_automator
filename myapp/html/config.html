@@ -2,19 +2,69 @@
 <html>
 <head>
     <title>Config Editor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f2f2f2;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="checkbox"],
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: #ffffff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
     <h1>Config Editor</h1>
     <form id="config-form">
-        <label for="localization">LOCALIZATION:</label><br>
-        <input type="checkbox" id="localization" name="localization"><br>
         <label for="plex_host">PLEX_HOST:</label><br>
         <input type="text" id="plex_host" name="plex_host"><br>
         <label for="plex_port">PLEX_PORT:</label><br>
         <input type="number" id="plex_port" name="plex_port"><br>
         <label for="plex_token">PLEX_TOKEN:</label><br>
         <input type="text" id="plex_token" name="plex_token"><br>
+        <label for="localization">LOCALIZATION:</label><br>
+        <input type="checkbox" id="localization" name="localization"><br>
         <input type="submit" value="Submit">
     </form>
     <script src="js/config.js"></script>
