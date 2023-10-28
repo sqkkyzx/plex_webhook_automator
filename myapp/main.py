@@ -238,7 +238,6 @@ def weibo_oauth2(code):
     res['expires_date'] = (datetime.now() + timedelta(seconds=res['expires_in'])).strftime('%Y-%m-%d %H:%M')
     cfg['WEIBO_ACCESS_TOKEN'] = res["access_token"]
     cfg['WEIBO_ACCESS_EXPIRES_DATE'] = res["expires_date"]
-    print(cfg)
     with open('config/config.json', 'w') as file:
         json.dump(cfg, file, ensure_ascii=False)
     return res
