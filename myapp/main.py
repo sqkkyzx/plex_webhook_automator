@@ -74,27 +74,32 @@ async def main(request: Request):
                 ).operate_item(payload.Metadata.ratingKey)
         case 'media.play':
             log.info(F"服务器 {Color.BOLD}{Color.Magenta}{payload.Server.title}{Color.RESET} 的"
-                     F"用户 {Color.BOLD}{Color.Magenta}{payload.Account.title} {Color.Green}{Color.ITALIC}开始播放{Color.RESET} "
+                     F"用户 {Color.BOLD}{Color.Magenta}{payload.Account.title} {Color.Green}{Color.ITALIC}"
+                     F"开始播放{Color.RESET} "
                      F"库 {Color.BOLD}{Color.Magenta}{payload.Metadata.librarySectionTitle}{Color.RESET} 上的"
                      F"媒体 {Color.BOLD}{Color.Magenta}{payload.Metadata.title}{Color.RESET}")
         case 'media.pause':
             log.info(F"服务器 {Color.BOLD}{Color.Magenta}{payload.Server.title}{Color.RESET} 的"
-                     F"用户 {Color.BOLD}{Color.Magenta}{payload.Account.title} {Color.Yellow}{Color.ITALIC}暂停播放{Color.RESET} "
+                     F"用户 {Color.BOLD}{Color.Magenta}{payload.Account.title} {Color.Yellow}{Color.ITALIC}"
+                     F"暂停播放{Color.RESET} "
                      F"库 {Color.BOLD}{Color.Magenta}{payload.Metadata.librarySectionTitle}{Color.RESET} 上的"
                      F"媒体 {Color.BOLD}{Color.Magenta}{payload.Metadata.title}{Color.RESET}")
         case 'media.resume':
             log.info(F"服务器 {Color.BOLD}{Color.Magenta}{payload.Server.title}{Color.RESET} 的"
-                     F"用户 {Color.BOLD}{Color.Magenta}{payload.Account.title} {Color.Green}{Color.ITALIC}继续播放{Color.RESET} "
+                     F"用户 {Color.BOLD}{Color.Magenta}{payload.Account.title} {Color.Green}{Color.ITALIC}"
+                     F"继续播放{Color.RESET} "
                      F"库 {Color.BOLD}{Color.Magenta}{payload.Metadata.librarySectionTitle}{Color.RESET} 上的"
                      F"媒体 {Color.BOLD}{Color.Magenta}{payload.Metadata.title}{Color.RESET}")
         case 'media.stop':
             log.info(F"服务器 {Color.BOLD}{Color.Magenta}{payload.Server.title}{Color.RESET} 的"
-                     F"用户 {Color.BOLD}{Color.Magenta}{payload.Account.title} {Color.Red}{Color.ITALIC}停止播放{Color.RESET} "
+                     F"用户 {Color.BOLD}{Color.Magenta}{payload.Account.title} {Color.Red}{Color.ITALIC}"
+                     F"停止播放{Color.RESET} "
                      F"库 {Color.BOLD}{Color.Magenta}{payload.Metadata.librarySectionTitle}{Color.RESET} 上的"
                      F"媒体 {Color.BOLD}{Color.Magenta}{payload.Metadata.title}{Color.RESET}")
         case 'media.scrobble':
             log.info(F"服务器 {Color.BOLD}{Color.Magenta}{payload.Server.title}{Color.RESET} 的"
-                     F"用户 {Color.BOLD}{Color.Magenta}{payload.Account.title} {Color.Red}{Color.ITALIC}已看完{Color.RESET} "
+                     F"用户 {Color.BOLD}{Color.Magenta}{payload.Account.title} {Color.Red}{Color.ITALIC}"
+                     F"已看完{Color.RESET} "
                      F"库 {Color.BOLD}{Color.Magenta}{payload.Metadata.librarySectionTitle}{Color.RESET} 上的"
                      F"媒体 {Color.BOLD}{Color.Magenta}{payload.Metadata.title}{Color.RESET} ")
         case 'media.rate':
@@ -104,8 +109,7 @@ async def main(request: Request):
                      F"媒体 {Color.BOLD}{Color.Magenta}{payload.Metadata.title}{Color.RESET} "
                      F"评为 {Color.Red}{Color.BOLD}{Color.ITALIC}{payload.Metadata.userRating}{Color.RESET} 分")
         case 'admin.database.backup':
-            log.info(payload_json)
-            pass
+            log.info(F"服务器 {Color.BOLD}{Color.Magenta}{payload.Server.title}{Color.RESET} 已备份数据库")
         case 'admin.database.corrupte':
             log.info(payload_json)
             pass
