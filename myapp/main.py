@@ -61,7 +61,7 @@ async def main(request: Request):
         pdict={'boundary': bytes(content_type['boundary'], "utf-8")}
     )
     payload_json = multipart_data.get('payload', "{}")[0]
-    log.debug(payload_json)
+    log.info(payload_json)
 
     payload = Payload(json.loads(payload_json))
     thumb = multipart_data.get('thumb', [None])[0]
@@ -244,4 +244,4 @@ def weibo_oauth2(code):
 
 
 if __name__ == '__main__':
-    uvicorn.run('main:app', host='0.0.0.0', port=8080, reload=True, use_colors=True)
+    uvicorn.run('main:app', host='0.0.0.0', port=60014, reload=True, use_colors=True)
