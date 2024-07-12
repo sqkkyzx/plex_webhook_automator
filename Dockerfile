@@ -11,4 +11,4 @@ RUN pip install -U requests uvicorn[standard] fastapi pypinyin urllib3 --no-cach
 COPY myapp /usr/src/myapp
 
 # 启动应用程序
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080", "--log-level", "warning", "--reload"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080", "--log-level", "warning"]

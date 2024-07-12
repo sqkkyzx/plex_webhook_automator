@@ -184,39 +184,5 @@ def edit_config(cfg: Config):
     return {"success": True}
 
 
-# ----------------WEIBO CONFIG----------------------
-
-@app.get("/api/weibo/init")
-def weibo_init():
-    cfg = config()
-    client_id = cfg.get('WEIBO_APP_KEY')
-    redirect_uri = cfg.get('WEIBO_REDIRECT_URL')
-    return RedirectResponse(
-        url=f"https://api.weibo.com/oauth2/authorize?"
-            f"response_type=code&client_id={client_id}&redirect_uri={redirect_uri}",
-        status_code=302)
-
-
-@app.get("/api/weibo/oauth2")
-def weibo_oauth2(code):
-    cfg = config()
-    res = requests.post(
-        'https://api.weibo.com/oauth2/access_token',
-        params={
-            'client_id': cfg.get('WEIBO_APP_KEY'),
-            'client_secret': cfg.get('WEIBO_APP_SECRET'),
-            'redirect_uri': cfg.get('WEIBO_REDIRECT_URL'),
-            'code': code,
-            'grant_type': 'authorization_code'
-        }
-    ).json()
-    res['expires_date'] = (datetime.now() + timedelta(seconds=res['expires_in'])).strftime('%Y-%m-%d %H:%M')
-    cfg['WEIBO_ACCESS_TOKEN'] = res["access_token"]
-    cfg['WEIBO_ACCESS_EXPIRES_DATE'] = res["expires_date"]
-    with open('config/config.json', 'w') as file:
-        json.dump(cfg, file, ensure_ascii=False)
-    return res
-
-
 if __name__ == '__main__':
     uvicorn.run('main:app', host='0.0.0.0', port=60014, reload=True, use_colors=True)
