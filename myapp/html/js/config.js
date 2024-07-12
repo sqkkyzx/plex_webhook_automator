@@ -11,7 +11,7 @@ $(document).ready(function() {
     $("#config-form").submit(function(event) {
         event.preventDefault();
 
-        var config = {
+        const config = {
             LOCALIZATION: $("#localization").is(':checked'),
             PLEX_HOST: $("#plex_host").val(),
             PLEX_PORT: parseInt($("#plex_port").val()),

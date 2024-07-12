@@ -1,8 +1,6 @@
-import cgi
 import json
 import os
 from datetime import datetime, timedelta
-from io import BytesIO
 
 import requests
 import uvicorn
@@ -54,89 +52,66 @@ app.mount("/admin/", StaticFiles(directory="html"), name="static")
 
 @app.post("/event")
 async def main(request: Request):
-    body = await request.body()
-    content_type = cgi.parse_header(request.headers.get('content-type'))[1]
-    multipart_data = cgi.parse_multipart(
-        fp=BytesIO(body),
-        pdict={'boundary': bytes(content_type['boundary'], "utf-8")}
-    )
-    payload_json = multipart_data.get('payload', "{}")[0]
-    log.info(payload_json)
+    form = await request.form()
+    payload = form.get('payload')
+    # thumb = form.get('thumb')
 
-    payload = Payload(json.loads(payload_json))
-    thumb = multipart_data.get('thumb', [None])[0]
+    log.debug(payload)
 
-    if thumb:
-        filename = f"thumb/{payload.Metadata.ratingKey}.jpg"
-        with open(filename, "wb") as thumb_file:
-            thumb_file.write(thumb)
+    payload = Payload(json.loads(payload))
+
+    # if thumb:
+    #     filename = f"thumb/{payload.Metadata.ratingKey}.jpg"
+    #     with open(filename, "wb") as thumb_file:
+    #         thumb_file.write(thumb)
+
+    server_log = F" {Color.BOLD}{Color.Magenta}{payload.Server.title}{Color.RESET} "
+    user_log = F" {Color.BOLD}{Color.Magenta}{payload.Account.title}{Color.RESET} "
+    library_log = F" {Color.BOLD}{Color.Magenta}{payload.Metadata.librarySectionTitle}{Color.RESET} "
+    meida_log = F" {Color.BOLD}{Color.Magenta}{payload.Metadata.title}{Color.RESET} "
+    rating_log = F" {Color.Red}{Color.BOLD}{Color.ITALIC}{payload.Metadata.userRating}{Color.RESET} "
+    player_log = F" {Color.BOLD}{Color.Magenta}{payload.Player.title} "
+    play_log = F" {Color.Green}{Color.ITALIC}开始播放{Color.RESET} "
+    pause_log = F" {Color.Yellow}{Color.ITALIC}暂停播放{Color.RESET} "
+    resume_log = F" {Color.Green}{Color.ITALIC}继续播放{Color.RESET} "
+    stop_log = F" {Color.Red}{Color.ITALIC}停止播放{Color.RESET} "
+    scrobble_log = F" {Color.Red}{Color.ITALIC}已看完{Color.RESET} "
 
     match payload.TopLevel.event:
         case 'library.on.deck':
             pass
         case 'library.new':
-            log.info(F"服务器 {Color.BOLD}{Color.Magenta}{payload.Server.title}{Color.RESET} 的"
-                     F"库 {Color.BOLD}{Color.Magenta}{payload.Metadata.librarySectionTitle}{Color.RESET} "
-                     F"新增加了媒体 {Color.BOLD}{Color.Magenta}{payload.Metadata.title}{Color.RESET}")
+            log.info(F"服务器{server_log}的库{library_log}新增加了媒体{meida_log}")
+            try:
+                cfg = config()
+                if cfg.get('LOCALIZATION') is True:
+                    import func_localization
+                    func_localization.PlexServer(
+                        f"http://{cfg.get('PLEX_HOST')}:{cfg.get('PLEX_PORT')}", cfg.get('PLEX_TOKEN')
+                    ).operate_item(payload.Metadata.ratingKey)
+            except Exception as e:
+                log.error(e)
 
-            cfg = config()
-
-            if cfg.get('LOCALIZATION') is True:
-                import func_localization
-                func_localization.PlexServer(
-                    f"http://{cfg.get('PLEX_HOST')}:{cfg.get('PLEX_PORT')}", cfg.get('PLEX_TOKEN')
-                ).operate_item(payload.Metadata.ratingKey)
         case 'media.play':
-            log.info(F"服务器 {Color.BOLD}{Color.Magenta}{payload.Server.title}{Color.RESET} 的"
-                     F"用户 {Color.BOLD}{Color.Magenta}{payload.Account.title} {Color.Green}{Color.ITALIC}"
-                     F"开始播放{Color.RESET} "
-                     F"库 {Color.BOLD}{Color.Magenta}{payload.Metadata.librarySectionTitle}{Color.RESET} 上的"
-                     F"媒体 {Color.BOLD}{Color.Magenta}{payload.Metadata.title}{Color.RESET}")
+            log.info(F"服务器{server_log}的用户{play_log}库{library_log}上的媒体{meida_log}")
         case 'media.pause':
-            log.info(F"服务器 {Color.BOLD}{Color.Magenta}{payload.Server.title}{Color.RESET} 的"
-                     F"用户 {Color.BOLD}{Color.Magenta}{payload.Account.title} {Color.Yellow}{Color.ITALIC}"
-                     F"暂停播放{Color.RESET} "
-                     F"库 {Color.BOLD}{Color.Magenta}{payload.Metadata.librarySectionTitle}{Color.RESET} 上的"
-                     F"媒体 {Color.BOLD}{Color.Magenta}{payload.Metadata.title}{Color.RESET}")
+            log.info(F"服务器{server_log}的用户{user_log}{pause_log}库{library_log}上的媒体{meida_log}")
         case 'media.resume':
-            log.info(F"服务器 {Color.BOLD}{Color.Magenta}{payload.Server.title}{Color.RESET} 的"
-                     F"用户 {Color.BOLD}{Color.Magenta}{payload.Account.title} {Color.Green}{Color.ITALIC}"
-                     F"继续播放{Color.RESET} "
-                     F"库 {Color.BOLD}{Color.Magenta}{payload.Metadata.librarySectionTitle}{Color.RESET} 上的"
-                     F"媒体 {Color.BOLD}{Color.Magenta}{payload.Metadata.title}{Color.RESET}")
+            log.info(F"服务器{server_log}的用户{resume_log}库{library_log}上的媒体{meida_log}")
         case 'media.stop':
-            log.info(F"服务器 {Color.BOLD}{Color.Magenta}{payload.Server.title}{Color.RESET} 的"
-                     F"用户 {Color.BOLD}{Color.Magenta}{payload.Account.title} {Color.Red}{Color.ITALIC}"
-                     F"停止播放{Color.RESET} "
-                     F"库 {Color.BOLD}{Color.Magenta}{payload.Metadata.librarySectionTitle}{Color.RESET} 上的"
-                     F"媒体 {Color.BOLD}{Color.Magenta}{payload.Metadata.title}{Color.RESET}")
+            log.info(F"服务器{server_log}的用户{user_log}{stop_log}库{library_log}上的媒体{meida_log}")
         case 'media.scrobble':
-            log.info(F"服务器 {Color.BOLD}{Color.Magenta}{payload.Server.title}{Color.RESET} 的"
-                     F"用户 {Color.BOLD}{Color.Magenta}{payload.Account.title} {Color.Red}{Color.ITALIC}"
-                     F"已看完{Color.RESET} "
-                     F"库 {Color.BOLD}{Color.Magenta}{payload.Metadata.librarySectionTitle}{Color.RESET} 上的"
-                     F"媒体 {Color.BOLD}{Color.Magenta}{payload.Metadata.title}{Color.RESET} ")
+            log.info(F"服务器{server_log}的用户{user_log}{scrobble_log}库{library_log}上的媒体{meida_log}")
         case 'media.rate':
-            log.info(F"服务器 {Color.BOLD}{Color.Magenta}{payload.Server.title}{Color.RESET} 的"
-                     F"用户 {Color.BOLD}{Color.Magenta}{payload.Account.title}{Color.RESET} "
-                     F"将库 {Color.BOLD}{Color.Magenta}{payload.Metadata.librarySectionTitle}{Color.RESET} 上的"
-                     F"媒体 {Color.BOLD}{Color.Magenta}{payload.Metadata.title}{Color.RESET} "
-                     F"评为 {Color.Red}{Color.BOLD}{Color.ITALIC}{payload.Metadata.userRating}{Color.RESET} 分")
+            log.info(F"服务器{server_log}的用户{user_log}将库{library_log}上的媒体{meida_log}评为{rating_log}分")
         case 'admin.database.backup':
             log.info(F"服务器 {Color.BOLD}{Color.Magenta}{payload.Server.title}{Color.RESET} 已备份数据库")
         case 'admin.database.corrupte':
-            log.info(payload_json)
-            pass
+            log.info(payload)
         case 'device.new':
-            log.info(F"设备 {Color.BOLD}{Color.Magenta}{payload.Player.title} 加入了 "
-                     F"服务器 {Color.BOLD}{Color.Magenta}{payload.Server.title}{Color.RESET}")
-            pass
+            log.info(F"设备{player_log}加入了服务器{server_log}")
         case 'playback.started':
-            log.info(F"服务器 {Color.BOLD}{Color.Magenta}{payload.Server.title}{Color.RESET} 的"
-                     F"共享用户 {Color.BOLD}{Color.Magenta}{payload.Account.title} {Color.Green}{Color.ITALIC}"
-                     F"开始播放{Color.RESET} "
-                     F"库 {Color.BOLD}{Color.Magenta}{payload.Metadata.librarySectionTitle}{Color.RESET} 上的"
-                     F"媒体 {Color.BOLD}{Color.Magenta}{payload.Metadata.title}{Color.RESET}")
+            log.info(F"服务器{server_log}的共享用户{play_log}库{library_log}上的媒体{meida_log}")
 
     return 'succes'
 
